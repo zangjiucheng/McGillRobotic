@@ -25,16 +25,16 @@ int in3 = 1;
 int in4 = 0;
 
 /* Constant */
-aex::Array<long,3> ultraData;
-int angle;           // servo position in degrees
-bool turnStatus; // false = ccw, true = cw
+aex::Array<long, 3> ultraData;
+int SonarTime = 200;
+bool turnStatus;
 
 void setup() {
-  angle = 0;
   turnStatus = false;
   Serial.begin(9600);
   servo.attach(servoPin);
-  servo.write(angle); // initial to 0
+  turnStatus = true;
+  servo.write(0); // initial to 0
   // Set all the motor control pins to outputs
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
@@ -50,49 +50,66 @@ void setup() {
 }
 
 void loop() {
-
   detect();
-  if (ultraData[0] < 10 || ultraData[1] < 10 || ultraData[2] < 10) {
+  Serial.print("[");
+  for (int i; i < ultraData.getSize(); i++) {
+    Serial.print(ultraData[i] + ", ");
+  }
+  Serial.println("]");
+  DriveMoudle();
+  delay(100);
+}
+
+void DriveMoudle() {
+  /* 0 -> left, 1 -> front, 2 -> right */
+  if (ultraData[1] < 10 && ultraData[2] > 10) {
     moveBackward();
-    delay(500);
-    stop();
+    delay(100);
+    moveBackwardRight();
+    delay(100);
+  } else if (ultraData[1] < 10 && ultraData[1] > 10) {
+    moveBackward();
+    delay(100);
+    moveBackwardRight();
+    delay(100);
+  } else if (ultraData[1] < 10) {
+    moveBackward();
+    delay(100);
+  } else if (ultraData[1] < 25 && ultraData[2] > 15) {
+    moveForwardLeft();
+    delay(100);
+  } else if (ultraData[1] < 25 && ultraData[0] < 15) {
+    moveForwardRight();
+    delay(100);
   } else {
     moveForward();
   }
-  delay(2000);
-  Serial.print("[");
-  for(int i; i<ultraData.getSize();i++){
-    Serial.print(ultraData[i]+", ");
-    }
-   Serial.println("]");
-  
 }
 
 void detect() {
   stop();
   delay(200);
-  for (int i = 0; i < 3; i++) {
-    /* code */
-    ultraData[i] = sonar.ping_cm(); // get distance in cm
-    turnStatus = turnServo(turnStatus);
-    delay(100);
-  }
-}
-
-bool turnServo(bool status) {
-  if (status >= 175) {
-    status = false;
-  }
-  if (status <= 5) {
-    status = true;
-  }
-  if (status) {
-    angle += 90;
+  if (turnStatus) {
+    servo.write(30);
+    ultraData[0] = sonar.ping_cm();
+    delay(SonarTime);
+    servo.write(90);
+    ultraData[1] = sonar.ping_cm();
+    delay(SonarTime);
+    servo.write(150);
+    ultraData[2] = sonar.ping_cm();
+    turnStatus = false;
   } else {
-    angle -= 90;
+    servo.write(150);
+    ultraData[2] = sonar.ping_cm();
+    delay(SonarTime);
+    servo.write(90);
+    ultraData[1] = sonar.ping_cm();
+    delay(SonarTime);
+    servo.write(30);
+    ultraData[0] = sonar.ping_cm();
+    turnStatus = true;
   }
-  servo.write(angle);
-  return status;
 }
 
 void moveForward() {
