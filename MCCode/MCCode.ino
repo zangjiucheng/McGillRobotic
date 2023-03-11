@@ -25,14 +25,14 @@ int in3 = 1;
 int in4 = 0;
 
 /* Constant */
-aex::Array<long> ultraData(3);
-int angle = 0;           // servo position in degrees
-bool turnStatus = false; // false = ccw, true = cw
+aex::Array<long,3> ultraData;
+int angle;           // servo position in degrees
+bool turnStatus; // false = ccw, true = cw
 
 void setup() {
-
+  angle = 0;
+  turnStatus = false;
   Serial.begin(9600);
-
   servo.attach(servoPin);
   servo.write(angle); // initial to 0
   // Set all the motor control pins to outputs
@@ -54,12 +54,18 @@ void loop() {
   detect();
   if (ultraData[0] < 10 || ultraData[1] < 10 || ultraData[2] < 10) {
     moveBackward();
-    delay(1000);
+    delay(500);
     stop();
-    delay(1000);
   } else {
     moveForward();
   }
+  delay(2000);
+  Serial.print("[");
+  for(int i; i<ultraData.getSize();i++){
+    Serial.print(ultraData[i]+", ");
+    }
+   Serial.println("]");
+  
 }
 
 void detect() {
