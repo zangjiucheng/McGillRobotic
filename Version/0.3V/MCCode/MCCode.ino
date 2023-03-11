@@ -32,7 +32,7 @@ int lightPin3 = A3; // analog pin for light sensor (backwards)
 
 /* Constant */
 aex::Array<int, 4> lightData;
-aex::Array<long, 3> ultraDataOld;
+aex::Array<long, 3> ultraData;
 int SonarTime = 200;
 bool turnStatus;
 
