@@ -1,10 +1,35 @@
-// https://www.allaboutcircuits.com/projects/an-arduino-controlled-light-sensor/\
+/*
+ * Created by ArduinoGetStarted.com
+ *
+ * This example code is in the public domain
+ *
+ * Tutorial page: https://arduinogetstarted.com/tutorials/arduino-light-sensor
+ */
 
-int sensor_value = 0;
-void setup() {}
+void setup() {
+  // initialize serial communication at 9600 bits per second:
+  Serial.begin(9600);
+}
 
 void loop() {
-  sensor_value = analogRead(A0);
-  Serial.print("Sensor value: " + sensor_value);
-  delay(100);
+  // reads the input on analog pin A0 (value between 0 and 1023)
+  int analogValue = analogRead(A2);
+
+  Serial.print("Analog reading: ");
+  Serial.print(analogValue); // the raw analog reading
+
+  // We'll have a few threshholds, qualitatively determined
+  if (analogValue < 10) {
+    Serial.println(" - Dark");
+  } else if (analogValue < 200) {
+    Serial.println(" - Dim");
+  } else if (analogValue < 500) {
+    Serial.println(" - Light");
+  } else if (analogValue < 800) {
+    Serial.println(" - Bright");
+  } else {
+    Serial.println(" - Very bright");
+  }
+
+  delay(500);
 }
