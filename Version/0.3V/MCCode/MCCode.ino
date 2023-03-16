@@ -1,38 +1,37 @@
 #include "NewPing.h"
-#include <ArduinoExtra.h>
 #include <Servo.h>
 
 /* ultrasonic sensor */
-#define TRIGGER_PIN 9
-#define ECHO_PIN 10
+#define TRIGGER_PIN A3
+#define ECHO_PIN A2
 // Maximum distance we want to ping for (in centimeters).
 #define MAX_DISTANCE 400
 // NewPing setup of pins and maximum distance.
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 /* Servo motor */
-int servoPin = 11; // control pin for servo
+int servoPin = 3; // control pin for servo
 Servo servo;
 
 /* PWMMotor */
 // Motor A connections
-int enA = 6;
-int in1 = 8;
-int in2 = 7;
+int enA = 10;
+int in1 = 9;
+int in2 = 8;
 // Motor B connections
-int enB = 5;
-int in3 = 1;
-int in4 = 0;
+int enB = 7;
+int in3 = 6;
+int in4 = 5;
 
 /* LightSensor */
-int lightPin0 = A0; // analog pin for light sensor (forwards)
+int lightPin0 = A2; // analog pin for light sensor (forwards)
 int lightPin1 = A1; // analog pin for light sensor (left)
-int lightPin2 = A2; // analog pin for light sensor (right)
-int lightPin3 = A3; // analog pin for light sensor (backwards)
+int lightPin2 = A6; // analog pin for light sensor (right)
+// int lightPin3 = A3; // analog pin for light sensor (backwards)
 
 /* Constant */
-aex::Array<int, 4> lightData;
-aex::Array<long, 3> ultraData;
+int[4] lightData;
+int[3] ultraData;
 int SonarTime = 200;
 bool turnStatus;
 
@@ -60,6 +59,7 @@ void loop() {
   detect();
   DriveMoudle();
   delay(100);
+  printData();
 }
 
 void printData() {
